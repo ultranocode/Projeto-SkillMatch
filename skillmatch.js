@@ -1,4 +1,4 @@
-//Canditatos 
+//Relação de Canditatos 
 
 const candidato1 = {
   nome: "Juliana",
@@ -48,3 +48,51 @@ const candidato7 = {
   habilidades: ["Next.js", "Tailwind CSS", "GitHub", "API REST"],
   experienciaMeses: 9
 };
+
+// Relação de Vagas
+
+const vagas = [
+  {
+    id: 1,
+    empresa: "PixelTech",
+    cargo: "Desenvolvedor Front-End Júnior",
+    requisitos: ["HTML", "CSS", "JavaScript", "Git"],
+    salario: 2800,
+    modalidade: "Remoto"
+  },
+  {
+    id: 2,
+    empresa: "NovaWeb",
+    cargo: "Front-End Developer Júnior",
+    requisitos: ["React", "JavaScript", "Responsividade", "GitHub"],
+    salario: 3200,
+    modalidade: "Híbrido"
+  },
+  {
+    id: 3,
+    empresa: "DevHouse",
+    cargo: "Programador Front-End",
+    requisitos: ["HTML", "CSS", "Bootstrap", "Lógica de Programação"],
+    salario: 2500,
+    modalidade: "Presencial"
+  },
+  {
+    id: 4,
+    empresa: "SoftVision",
+    cargo: "Desenvolvedor React Júnior",
+    requisitos: ["React", "API REST", "JavaScript", "Git"],
+    salario: 3500,
+    modalidade: "Remoto"
+  },
+  {
+    id: 5,
+    empresa: "CodeFactory",
+    cargo: "Estágio Front-End",
+    requisitos: ["HTML", "CSS", "JavaScript", "Kanban"],
+    salario: 1800,
+    modalidade: "Híbrido"
+  }
+];
+
+
+
