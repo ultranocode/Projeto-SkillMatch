@@ -109,26 +109,63 @@ function normalizarTexto(texto) {
 // Função para calcular compatibilidade entre candidatos e vagas
 
 function calcularCompatibilidade(candidato, vaga) {
-    const habilidadesNorm = candidato.habilidades.map(h => normalizar(h)); // Normaliza as habilidades do candidato
-    const requisitosNorm = vaga.requisitos.map(r => normalizar(r));       // Normaliza os requisitos da vaga
-    const habilidadesEncontradas = requisitosNorm.filter(req =>          //Filtra habilidades do candidato que correspondem aos requisitos da vaga
-        habilidadesNorm.includes(req)
-    );
+  const habilidadesNorm = candidato.habilidades.map(h => normalizar(h)); // Normaliza as habilidades do candidato
+  const requisitosNorm = vaga.requisitos.map(r => normalizar(r));       // Normaliza os requisitos da vaga
+  const habilidadesEncontradas = requisitosNorm.filter(req =>          //Filtra habilidades do candidato que correspondem aos requisitos da vaga
+    habilidadesNorm.includes(req)
+  );
 
   // Função para verificar os requisitos que faltam para o candidato
 
-   const habilidadesFaltantes = requisitosNorm.filter(req => 
-        !habilidadesNorm.includes(req)
-    );
+  const habilidadesFaltantes = requisitosNorm.filter(req =>
+    !habilidadesNorm.includes(req)
+  );
 
   // Calcula o percentual de compatibilidade entre as habilidades encontradas e os requisitos da vaga
 
-const percentual = requisitosNorm.length > 0                                // Se existir pelo menos 1 requisitofaz o cálculo da porcentagem
+  const percentual = requisitosNorm.length > 0                                // Se existir pelo menos 1 requisitofaz o cálculo da porcentagem
     ? (habilidadesEncontradas.length / requisitosNorm.length) * 100 : 0;    // Caso não exista nenhum requisito retorna 0 para evitar erro matemático
 
-  }
 
-  
+  // Retorna um objeto com o percentual de compatibilidade, as habilidades encontradas e as habilidades faltantes
+
+  return {
+    percentual: percentual,
+    habilidadesEncontradas: habilidadesEncontradas,
+    habilidadesFaltantes: habilidadesFaltantes
+  };
+}
+
+
+//Função para classificar candidatos
+
+
+function classificarCandidatos(candidatos, vaga) {
+    const ranking = candidatos.map(candidato => {
+        const compatibilidade = calcularCompatibilidade(candidato, vaga);
+        return {
+            ...candidato,
+
+            percentual: compatibilidade.percentual,
+
+            habilidadesEncontradas:
+                compatibilidade.habilidadesEncontradas,
+
+            habilidadesFaltantes:
+                compatibilidade.habilidadesFaltantes
+
+        };
+    });
+
+// Ordena o ranking de candidatos com base no percentual de compatibilidade, do maior para o menor
+
+    ranking.sort((a, b) =>                
+        b.percentual - a.percentual
+    );
+
+    // Retorna classificação final
+    return ranking;
+}
 
 
 
