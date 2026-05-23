@@ -109,6 +109,19 @@ function normalizarTexto(texto) {
 }
 
 
+// Função para classificar o percentual em Alta, Média ou Baixa compatibilidade
+
+function classificarPercentual(percentual) {
+  if (percentual >= 80) {
+    return "🟢 Alta compatibilidade";
+  } else if (percentual >= 50) {
+    return "🟡 Média compatibilidade";
+  } else {
+    return "🔴 Baixa compatibilidade";
+  }
+}
+
+
 // Função para calcular compatibilidade entre candidato e vaga
 
 function calcularCompatibilidade(candidato, vaga) {
@@ -153,6 +166,7 @@ function classificarCandidatos(candidatos, vaga) {
       ...candidato,
       percentual: compatibilidade.percentual,
       percentualFormatado: `${compatibilidade.percentual.toFixed(0)}%`,
+      classificacao: classificarPercentual(compatibilidade.percentual),
       habilidadesEncontradas: compatibilidade.habilidadesEncontradas,
       habilidadesFaltantes: compatibilidade.habilidadesFaltantes
     };
@@ -172,7 +186,7 @@ function classificarCandidatos(candidatos, vaga) {
 }
 
 
-// PEsquisa de candidadtos de acordo com a vaga escolhida
+// Pesquisa de candidatos de acordo com a vaga escolhida
 
 const entrada = prompt("Digite o ID da vaga que deseja pesquisar:");
 const idVaga = Number(entrada);
@@ -187,21 +201,20 @@ if (entrada === null || entrada.trim() === "" || isNaN(idVaga)) {
     // Gera classificação dos candidatos
     const ranking = classificarCandidatos(candidatos, vagaEscolhida);
 
-    
     // Exibe informações da vaga
-    
+
     console.log("\n=================================");
     console.log("VAGA SELECIONADA");
     console.log("=================================");
-    console.log(` Empresa:      ${vagaEscolhida.empresa}`);
-    console.log(` Cargo:        ${vagaEscolhida.cargo}`);
-    console.log(` Salário:      R$ ${vagaEscolhida.salario}`);
-    console.log(` Modalidade:   ${vagaEscolhida.modalidade}`);
+    console.log(` Empresa:     ${vagaEscolhida.empresa}`);
+    console.log(` Cargo:       ${vagaEscolhida.cargo}`);
+    console.log(` Salário:     R$ ${vagaEscolhida.salario}`);
+    console.log(` Modalidade:  ${vagaEscolhida.modalidade}`);
     console.log(` Requisitos:  ${vagaEscolhida.requisitos.join(", ")}`);
     console.log("");
 
     // Classificação dos candidatos
-    
+
     console.log("=================================");
     console.log("CLASSIFICAÇÃO DOS CANDIDATOS");
     console.log("=================================");
@@ -213,12 +226,13 @@ if (entrada === null || entrada.trim() === "" || isNaN(idVaga)) {
       Área: candidato.area,
       Experiência: `${candidato.experienciaMeses} meses`,
       Compatibilidade: candidato.percentualFormatado,
+      Classificação: candidato.classificacao,
 
       // Se não houver habilidades compatíveis, mostra um traço
       "Habilidades Compatíveis":
         candidato.habilidadesEncontradas.length > 0
           ? candidato.habilidadesEncontradas.join(", ")
-          : "—",
+          : "Nenhuma habilidade compatível",
 
       // Se não houver faltantes, mostra mensagem positiva
       "Habilidades Faltantes":
@@ -234,4 +248,3 @@ if (entrada === null || entrada.trim() === "" || isNaN(idVaga)) {
     console.log(`Vaga com ID ${idVaga} não encontrada.`);
   }
 }
-
