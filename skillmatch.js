@@ -115,8 +115,13 @@ function calcularCompatibilidade(candidato, vaga) {
         habilidadesNorm.includes(req)
     );
 
-  }     
+  // Função para verificar os requisitos que faltam para o candidato
 
+   const habilidadesFaltantes = requisitosNorm.filter(req => 
+        !habilidadesNorm.includes(req)
+    );
+
+  }
 
 
 
