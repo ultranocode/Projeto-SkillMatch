@@ -101,7 +101,10 @@ const vagas = [
 ];
 
 
-//Função para normalizar o texto, melhornado a busca e comparações: trasforma em  minúsculas e retirar espaços em branco.
+// Função para normalizar texto,
+// melhorando buscas e comparações.
+// Converte para minúsculas e remove espaços extras.
+
 function normalizarTexto(texto) {
   return texto.toLowerCase().trim();
 }
@@ -109,13 +112,13 @@ function normalizarTexto(texto) {
 // Função para calcular compatibilidade entre candidatos e vagas
 
 function calcularCompatibilidade(candidato, vaga) {
-  const habilidadesNorm = candidato.habilidades.map(h => normalizar(h)); // Normaliza as habilidades do candidato
-  const requisitosNorm = vaga.requisitos.map(r => normalizar(r));       // Normaliza os requisitos da vaga
+  const habilidadesNorm = candidato.habilidades.map(h => normalizarTexto(h)); // Normaliza as habilidades do candidato
+  const requisitosNorm = vaga.requisitos.map(r => normalizarTexto(r));       // Normaliza os requisitos da vaga
   const habilidadesEncontradas = requisitosNorm.filter(req =>          //Filtra habilidades do candidato que correspondem aos requisitos da vaga
     habilidadesNorm.includes(req)
   );
 
-  // Função para verificar os requisitos que faltam para o candidato
+  // Verifica os requisitos que faltam para o candidato
 
   const habilidadesFaltantes = requisitosNorm.filter(req =>
     !habilidadesNorm.includes(req)
@@ -157,18 +160,67 @@ function classificarCandidatos(candidatos, vaga) {
         };
     });
 
-// Ordena o ranking de candidatos com base no percentual de compatibilidade, do maior para o menor
+// Ordena o ranking de candidatos com base
+// no percentual de compatibilidade
 
-    ranking.sort((a, b) =>                
-        b.percentual - a.percentual
-    );
+ranking.sort((a, b) => {
 
-    // Retorna classificação final
-    return ranking;
+    // Primeiro ordena pelo percentual
+    if (b.percentual !== a.percentual) {
+        return b.percentual - a.percentual;
+    }
+
+    // Se empatar, ordena pela experiência
+    return b.experienciaMeses - a.experienciaMeses;
+});
+
+
+// Retorna classificação final
+return ranking;
+
 }
 
+//Realizando pesquisa de candidatos de acordo com a vaga escolhida
+
+const idVaga = Number(
+    prompt("Digite o ID da vaga que deseja pesquisar:")
+);
+
+const vagaEscolhida = vagas.find(vaga =>
+    vaga.id === idVaga
+);
+
+if (vagaEscolhida) {
+
+    // Gera classificação dos candidatos
+    const ranking = classificarCandidatos(
+        candidatos,
+        vagaEscolhida
+    );
+
+    // Exibe informações da vaga
+    console.log("=================================");
+    console.log("VAGA SELECIONADA");
+    console.log("=================================");
+
+    console.log("Empresa:", vagaEscolhida.empresa);
+    console.log("Cargo:", vagaEscolhida.cargo);
+
+    console.log("");
 
 
+    // Exibe ranking
+    console.log("=================================");
+    console.log("CLASSIFICAÇÃO DOS CANDIDATOS");
+    console.log("=================================");
+
+    console.table(ranking);
+
+} else {
+
+    // Caso a vaga não exista
+    console.log("❌ Vaga não encontrada.");
+}
 
 
 
