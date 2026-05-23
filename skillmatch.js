@@ -121,6 +121,17 @@ function classificarPercentual(percentual) {
   }
 }
 
+// Encontra a vaga com maior compatibilidade para um candidato
+// Usa o método de array .reduce()
+
+function encontrarMelhorVaga(candidato, vagas) {
+  return vagas.reduce((melhor, vagaAtual) => {
+    const compAtual  = calcularCompatibilidade(candidato, vagaAtual);
+    const compMelhor = calcularCompatibilidade(candidato, melhor);
+    return compAtual.percentual > compMelhor.percentual ? vagaAtual : melhor;
+  });
+}
+
 
 // Função para calcular compatibilidade entre candidato e vaga
 
@@ -243,8 +254,22 @@ if (entrada === null || entrada.trim() === "" || isNaN(idVaga)) {
 
     console.table(rankingVisual);
 
+    // Exibe a melhor vaga para cada candidato
+
+console.log("=================================");
+console.log("MELHOR VAGA POR CANDIDATO");
+console.log("=================================");
+
+candidatos.forEach(candidato => {
+  const melhorVaga = encontrarMelhorVaga(candidato, vagas);
+  const comp = calcularCompatibilidade(candidato, melhorVaga);
+  console.log(`👤 ${candidato.nome} → ${melhorVaga.empresa} | ${melhorVaga.cargo} | ${comp.percentual.toFixed(0)}%`);
+});
+
   } else {
     // Caso a vaga não exista
     console.log(`Vaga com ID ${idVaga} não encontrada.`);
   }
 }
+
+
