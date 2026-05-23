@@ -1,6 +1,6 @@
 //Relação de Canditatos , cada um com suas habilidades e experiência
 // O escopo do projeto solicitava que os canditos  fossem organizados em objetos. 
-// No entanto, a organização dos candidatos em um array é melhor para facilitar a manipulação dos dados e a aplicação de funções de ordenação, filtragem e busca.
+// No entanto, optado por organizar os candidatos em um array é melhor para facilitar a manipulação dos dados e a aplicação de funções de ordenação, filtragem e busca.
 
 
 const candidatos = [
@@ -99,6 +99,25 @@ const vagas = [
     modalidade: "Híbrido"
   }
 ];
+
+
+//Função para normalizar o texto, melhornado a busca e comparações: trasforma em  minúsculas e retirar espaços em branco.
+function normalizarTexto(texto) {
+  return texto.toLowerCase().trim();
+}
+
+// Função para calcular compatibilidade entre candidatos e vagas
+
+function calcularCompatibilidade(candidato, vaga) {
+    const habilidadesNorm = candidato.habilidades.map(h => normalizar(h)); // Normaliza as habilidades do candidato
+    const requisitosNorm = vaga.requisitos.map(r => normalizar(r));       // Normaliza os requisitos da vaga
+    const habilidadesEncontradas = requisitosNorm.filter(req =>          //Filtra habilidades do candidato que correspondem aos requisitos da vaga
+        habilidadesNorm.includes(req)
+    );
+
+  }     
+
+
 
 
 
