@@ -121,7 +121,14 @@ function calcularCompatibilidade(candidato, vaga) {
         !habilidadesNorm.includes(req)
     );
 
+  // Calcula o percentual de compatibilidade entre as habilidades encontradas e os requisitos da vaga
+
+const percentual = requisitosNorm.length > 0                                // Se existir pelo menos 1 requisitofaz o cálculo da porcentagem
+    ? (habilidadesEncontradas.length / requisitosNorm.length) * 100 : 0;    // Caso não exista nenhum requisito retorna 0 para evitar erro matemático
+
   }
+
+  
 
 
 
