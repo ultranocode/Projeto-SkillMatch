@@ -132,6 +132,31 @@ function encontrarMelhorVaga(candidato, vagas) {
   });
 }
 
+// Gerar uma recomendação de estudo baseada nas habilidades faltantes
+
+function gerarRecomendacao(candidato, vagas) {
+
+  // Coleta todas as habilidades faltantes do candidato em todas as vagas
+  const todasFaltantes = [];
+
+  for (const vaga of vagas) {
+    const comp = calcularCompatibilidade(candidato, vaga);
+    for (const habilidade of comp.habilidadesFaltantes) {
+      todasFaltantes.push(habilidade);
+    }
+  }
+
+  // Se não faltar nada, retorna uma mensagem positiva
+  if (todasFaltantes.length === 0) {
+    return "Parabéns! Você atende todos os requisitos das vagas analisadas. 🎯";
+  }
+
+  // Remove habilidades duplicadas usando Set
+  const semDuplicatas = [...new Set(todasFaltantes)];
+
+  return `Priorize estudar: ${semDuplicatas.join(", ")}.`;
+}
+
 
 // Função para calcular compatibilidade entre candidato e vaga
 
@@ -265,6 +290,18 @@ candidatos.forEach(candidato => {
   const comp = calcularCompatibilidade(candidato, melhorVaga);
   console.log(`👤 ${candidato.nome} → ${melhorVaga.empresa} | ${melhorVaga.cargo} | ${comp.percentual.toFixed(0)}%`);
 });
+
+// Exibe recomendação de estudo para cada candidato
+
+console.log("=================================");
+console.log(" RECOMENDAÇÕES DE ESTUDO");
+console.log("=================================");
+
+candidatos.forEach(candidato => {
+  const recomendacao = gerarRecomendacao(candidato, vagas);
+  console.log(` ${candidato.nome}: ${recomendacao}`);
+});
+
 
   } else {
     // Caso a vaga não exista
