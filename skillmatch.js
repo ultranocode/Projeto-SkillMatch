@@ -184,6 +184,108 @@ function criarContadorDeAnalises() {
 // Cria o contador uma vez — a partir daqui basta chamar contarAnalise()
 const contarAnalise = criarContadorDeAnalises();
 
+//-----------------------------------------------------------------------------------------------------------
+
+// RF14 – Promise
+// Simula um carregamento de vagas como se viessem de um servidor
+
+function buscarVagasSimuladas() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(vagas);
+    }, 1000);
+  });
+}
+
+
+// RF14 – async/await
+// Espera as vagas carregarem antes de continuar
+
+async function iniciarSistema() {
+  console.log("⏳ Carregando vagas...");
+  const vagasCarregadas = await buscarVagasSimuladas();
+  console.log("✅ Vagas carregadas!\n");
+
+  const entrada = prompt("Digite o ID da vaga que deseja pesquisar:");
+  const idVaga = Number(entrada);
+
+  if (entrada === null || entrada.trim() === "" || isNaN(idVaga)) {
+    console.log("❌ ID inválido. Por favor, digite um número.");
+    return;
+  }
+
+  const vagaEscolhida = vagasCarregadas.find(vaga => vaga.id === idVaga);
+
+  if (vagaEscolhida) {
+    const ranking = classificarCandidatos(candidatos, vagaEscolhida);
+
+    console.log("\n=================================");
+    console.log("VAGA SELECIONADA");
+    console.log("=================================");
+    console.log(` Empresa:     ${vagaEscolhida.empresa}`);
+    console.log(` Cargo:       ${vagaEscolhida.cargo}`);
+    console.log(` Salário:     R$ ${vagaEscolhida.salario}`);
+    console.log(` Modalidade:  ${vagaEscolhida.modalidade}`);
+    console.log(` Requisitos:  ${vagaEscolhida.requisitos.join(", ")}`);
+    console.log("");
+
+    console.log("=================================");
+    console.log("CLASSIFICAÇÃO DOS CANDIDATOS");
+    console.log("=================================");
+
+    const rankingVisual = ranking.map(candidato => ({
+      Nome: candidato.nome,
+      Área: candidato.area,
+      Experiência: `${candidato.experienciaMeses} meses`,
+      Compatibilidade: candidato.percentualFormatado,
+      Classificação: candidato.classificacao,
+      "Habilidades Compatíveis":
+        candidato.habilidadesEncontradas.length > 0
+          ? candidato.habilidadesEncontradas.join(", ")
+          : "Nenhuma habilidade compatível",
+      "Habilidades Faltantes":
+        candidato.habilidadesFaltantes.length > 0
+          ? candidato.habilidadesFaltantes.join(", ")
+          : "Nenhuma habilidade faltante"
+    }));
+
+    console.table(rankingVisual);
+
+    console.log("=================================");
+    console.log("📋 RESUMO DA VAGA (via classe)");
+    console.log("=================================");
+    console.log(vagaEscolhida.exibirResumo());
+    console.log(vagaEscolhida.exibirNivel());
+
+    console.log("=================================");
+    console.log("⭐ MELHOR VAGA POR CANDIDATO");
+    console.log("=================================");
+    candidatos.forEach(candidato => {
+      const melhorVaga = encontrarMelhorVaga(candidato, vagasCarregadas);
+      const comp = calcularCompatibilidade(candidato, melhorVaga);
+      console.log(`👤 ${candidato.nome} → ${melhorVaga.empresa} | ${melhorVaga.cargo} | ${comp.percentual.toFixed(0)}%`);
+    });
+
+    console.log("=================================");
+    console.log("📚 RECOMENDAÇÕES DE ESTUDO");
+    console.log("=================================");
+    candidatos.forEach(candidato => {
+      const recomendacao = gerarRecomendacao(candidato, vagasCarregadas);
+      console.log(`👤 ${candidato.nome}: ${recomendacao}`);
+    });
+
+    const numeroAnalise = contarAnalise();
+    console.log(`\n🔢 Esta foi a análise nº ${numeroAnalise} realizada pelo sistema.`);
+
+    finalizarAnalise(ranking[0].nome, exibirMensagemFinal);
+
+  } else {
+    console.log(`Vaga com ID ${idVaga} não encontrada.`);
+  }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------
+
 
 // Função para calcular compatibilidade entre candidato e vaga
 
@@ -248,113 +350,7 @@ function classificarCandidatos(candidatos, vaga) {
   return ranking;
 }
 
+// Inicia o sistema
+iniciarSistema();
 
-// Pesquisa de candidatos de acordo com a vaga escolhida
-
-const entrada = prompt("Digite o ID da vaga que deseja pesquisar:");
-const idVaga = Number(entrada);
-
-// Validação: usuário cancelou o prompt ou digitou algo que não é número
-if (entrada === null || entrada.trim() === "" || isNaN(idVaga)) {
-  console.log("❌ ID inválido. Por favor, digite um número.");
-} else {
-  const vagaEscolhida = vagas.find(vaga => vaga.id === idVaga);
-
-  if (vagaEscolhida) {
-    // Gera classificação dos candidatos
-    const ranking = classificarCandidatos(candidatos, vagaEscolhida);
-
-    // Exibe informações da vaga
-
-    console.log("\n=================================");
-    console.log("VAGA SELECIONADA");
-    console.log("=================================");
-    console.log(` Empresa:     ${vagaEscolhida.empresa}`);
-    console.log(` Cargo:       ${vagaEscolhida.cargo}`);
-    console.log(` Salário:     R$ ${vagaEscolhida.salario}`);
-    console.log(` Modalidade:  ${vagaEscolhida.modalidade}`);
-    console.log(` Requisitos:  ${vagaEscolhida.requisitos.join(", ")}`);
-    console.log("");
-
-    // Classificação dos candidatos
-
-    console.log("=================================");
-    console.log("CLASSIFICAÇÃO DOS CANDIDATOS");
-    console.log("=================================");
-
-    // Monta uma visualização mais limpa para o console.table
-
-    const rankingVisual = ranking.map(candidato => ({
-      Nome: candidato.nome,
-      Área: candidato.area,
-      Experiência: `${candidato.experienciaMeses} meses`,
-      Compatibilidade: candidato.percentualFormatado,
-      Classificação: candidato.classificacao,
-
-      // Se não houver habilidades compatíveis, mostra um traço
-      "Habilidades Compatíveis":
-        candidato.habilidadesEncontradas.length > 0
-          ? candidato.habilidadesEncontradas.join(", ")
-          : "Nenhuma habilidade compatível",
-
-      // Se não houver faltantes, mostra mensagem positiva
-      "Habilidades Faltantes":
-        candidato.habilidadesFaltantes.length > 0
-          ? candidato.habilidadesFaltantes.join(", ")
-          : "Nenhuma habilidade faltante"
-    }));
-
-    console.table(rankingVisual);
-
-
-    // Demonstração do método exibirResumo() usando this
-    
-console.log("=================================");
-console.log("📋 RESUMO DA VAGA (via classe)");
-console.log("=================================");
-console.log(vagaEscolhida.exibirResumo());
-console.log(vagaEscolhida.exibirNivel());
-
-    
-
-    // Exibe a melhor vaga para cada candidato
-
-console.log("=================================");
-console.log("MELHOR VAGA POR CANDIDATO");
-console.log("=================================");
-
-candidatos.forEach(candidato => {
-  const melhorVaga = encontrarMelhorVaga(candidato, vagas);
-  const comp = calcularCompatibilidade(candidato, melhorVaga);
-  console.log(`👤 ${candidato.nome} → ${melhorVaga.empresa} | ${melhorVaga.cargo} | ${comp.percentual.toFixed(0)}%`);
-});
-
-// Exibe recomendação de estudo para cada candidato
-
-console.log("=================================");
-console.log(" RECOMENDAÇÕES DE ESTUDO");
-console.log("=================================");
-
-candidatos.forEach(candidato => {
-  const recomendacao = gerarRecomendacao(candidato, vagas);
-  console.log(` ${candidato.nome}: ${recomendacao}`);
-});
-
-// Closure em ação: registra e exibe o número da análise atual
-
-const numeroAnalise = contarAnalise();
-console.log(`\n🔢 Esta foi a análise nº ${numeroAnalise} realizada pelo sistema.`);
-
-
-// Chama finalizarAnalise passando exibirMensagemFinal como callback
-// O nome passado é o do 1º colocado no ranking
-
-finalizarAnalise(ranking[0].nome, exibirMensagemFinal);
-
-
-  } else {
-    // Caso a vaga não exista
-    console.log(`Vaga com ID ${idVaga} não encontrada.`);
-  }
-}
 
