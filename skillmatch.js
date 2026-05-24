@@ -157,6 +157,18 @@ function gerarRecomendacao(candidato, vagas) {
   return `Priorize estudar: ${semDuplicatas.join(", ")}.`;
 }
 
+// RF12 – Callback
+// Utilizando Callback em "finalizarAnalise", em que recebe uma função como parâmetro e a chama no final 
+
+function finalizarAnalise(nomeCandidato, callback) {
+  console.log("\n✅ Análise finalizada.");
+  callback(nomeCandidato);
+}
+
+function exibirMensagemFinal(nome) {
+  console.log(`📌 ${nome} foi o candidato mais compatível. Revise as habilidades faltantes e atualize o plano de estudos!`);
+}
+
 
 // Função para calcular compatibilidade entre candidato e vaga
 
@@ -313,9 +325,15 @@ candidatos.forEach(candidato => {
   console.log(` ${candidato.nome}: ${recomendacao}`);
 });
 
+// Chama finalizarAnalise passando exibirMensagemFinal como callback
+// O nome passado é o do 1º colocado no ranking
+
+finalizarAnalise(ranking[0].nome, exibirMensagemFinal);
+
 
   } else {
     // Caso a vaga não exista
     console.log(`Vaga com ID ${idVaga} não encontrada.`);
   }
 }
+
