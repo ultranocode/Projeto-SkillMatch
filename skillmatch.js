@@ -157,7 +157,7 @@ function gerarRecomendacao(candidato, vagas) {
   return `Priorize estudar: ${semDuplicatas.join(", ")}.`;
 }
 
-// RF12 – Callback
+// Callback
 // Utilizando Callback em "finalizarAnalise", em que recebe uma função como parâmetro e a chama no final 
 
 function finalizarAnalise(nomeCandidato, callback) {
@@ -168,6 +168,21 @@ function finalizarAnalise(nomeCandidato, callback) {
 function exibirMensagemFinal(nome) {
   console.log(`📌 ${nome} foi o candidato mais compatível. Revise as habilidades faltantes e atualize o plano de estudos!`);
 }
+
+// Closure
+// criarContadorDeAnalises retorna uma função interna que
+// "lembra" o valor de "total" entre as chamadas
+
+function criarContadorDeAnalises() {
+  let total = 0;
+  return function () {
+    total++;
+    return total;
+  };
+}
+
+// Cria o contador uma vez — a partir daqui basta chamar contarAnalise()
+const contarAnalise = criarContadorDeAnalises();
 
 
 // Função para calcular compatibilidade entre candidato e vaga
@@ -324,6 +339,12 @@ candidatos.forEach(candidato => {
   const recomendacao = gerarRecomendacao(candidato, vagas);
   console.log(` ${candidato.nome}: ${recomendacao}`);
 });
+
+// Closure em ação: registra e exibe o número da análise atual
+
+const numeroAnalise = contarAnalise();
+console.log(`\n🔢 Esta foi a análise nº ${numeroAnalise} realizada pelo sistema.`);
+
 
 // Chama finalizarAnalise passando exibirMensagemFinal como callback
 // O nome passado é o do 1º colocado no ranking
