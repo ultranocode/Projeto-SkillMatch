@@ -3,6 +3,41 @@
 // No entanto, optei por organizá-los em um array para facilitar a manipulação
 // dos dados e a aplicação de funções de ordenação, filtragem e busca.
 
+
+// Classe Vaga (POO)
+
+class Vaga {
+  constructor(id, empresa, cargo, requisitos, salario, modalidade) {
+    this.id = id;
+    this.empresa = empresa;
+    this.cargo = cargo;
+    this.requisitos = requisitos;
+    this.salario = salario;
+    this.modalidade = modalidade;
+  }
+
+  // Método que usa "this" para acessar os dados do próprio objeto
+  exibirResumo() {
+    return `${this.cargo} na empresa ${this.empresa} | R$ ${this.salario} | ${this.modalidade}`;
+  }
+}
+
+
+// Herança: VagaFrontEnd herda tudo de Vaga e adiciona o nível
+
+class VagaFrontEnd extends Vaga {
+  constructor(id, empresa, cargo, requisitos, salario, modalidade, nivel) {
+    super(id, empresa, cargo, requisitos, salario, modalidade);
+    this.nivel = nivel;
+  }
+
+  exibirNivel() {
+    return `Nível: ${this.nivel}`;
+  }
+}
+
+
+
 const candidatos = [
   {
     id: 1,
@@ -58,46 +93,11 @@ const candidatos = [
 // Relação de Vagas
 
 const vagas = [
-  {
-    id: 1,
-    empresa: "PixelTech",
-    cargo: "Desenvolvedor Front-End Júnior",
-    requisitos: ["HTML", "CSS", "JavaScript", "Git"],
-    salario: 2800,
-    modalidade: "Remoto"
-  },
-  {
-    id: 2,
-    empresa: "NovaWeb",
-    cargo: "Front-End Developer Júnior",
-    requisitos: ["React", "JavaScript", "Responsividade", "GitHub"],
-    salario: 3200,
-    modalidade: "Híbrido"
-  },
-  {
-    id: 3,
-    empresa: "DevHouse",
-    cargo: "Programador Front-End",
-    requisitos: ["HTML", "CSS", "Bootstrap", "Lógica de Programação"],
-    salario: 2500,
-    modalidade: "Presencial"
-  },
-  {
-    id: 4,
-    empresa: "SoftVision",
-    cargo: "Desenvolvedor React Júnior",
-    requisitos: ["React", "API REST", "JavaScript", "Git"],
-    salario: 3500,
-    modalidade: "Remoto"
-  },
-  {
-    id: 5,
-    empresa: "CodeFactory",
-    cargo: "Estágio Front-End",
-    requisitos: ["HTML", "CSS", "JavaScript", "Kanban"],
-    salario: 1800,
-    modalidade: "Híbrido"
-  }
+  new VagaFrontEnd(1, "PixelTech",   "Desenvolvedor Front-End Júnior", ["HTML", "CSS", "JavaScript", "Git"],                  2800, "Remoto",     "Júnior"),
+  new VagaFrontEnd(2, "NovaWeb",     "Front-End Developer Júnior",     ["React", "JavaScript", "Responsividade", "GitHub"],   3200, "Híbrido",    "Júnior"),
+  new VagaFrontEnd(3, "DevHouse",    "Programador Front-End",          ["HTML", "CSS", "Bootstrap", "Lógica de Programação"], 2500, "Presencial", "Júnior"),
+  new VagaFrontEnd(4, "SoftVision",  "Desenvolvedor React Júnior",     ["React", "API REST", "JavaScript", "Git"],            3500, "Remoto",     "Júnior"),
+  new VagaFrontEnd(5, "CodeFactory", "Estágio Front-End",              ["HTML", "CSS", "JavaScript", "Kanban"],               1800, "Híbrido",    "Estágio")
 ];
 
 
@@ -279,6 +279,17 @@ if (entrada === null || entrada.trim() === "" || isNaN(idVaga)) {
 
     console.table(rankingVisual);
 
+
+    // Demonstração do método exibirResumo() usando this
+    
+console.log("=================================");
+console.log("📋 RESUMO DA VAGA (via classe)");
+console.log("=================================");
+console.log(vagaEscolhida.exibirResumo());
+console.log(vagaEscolhida.exibirNivel());
+
+    
+
     // Exibe a melhor vaga para cada candidato
 
 console.log("=================================");
@@ -308,5 +319,3 @@ candidatos.forEach(candidato => {
     console.log(`Vaga com ID ${idVaga} não encontrada.`);
   }
 }
-
-
