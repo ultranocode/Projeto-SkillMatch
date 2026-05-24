@@ -1,10 +1,11 @@
-// Relação de Candidatos, cada um com suas habilidades e experiência.
-// O escopo do projeto solicitava que os candidatos fossem organizados em objetos.
-// No entanto, optei por organizá-los em um array para facilitar a manipulação
-// dos dados e a aplicação de funções de ordenação, filtragem e busca.
+// ======================================================
+// SKILLMATCH JS - Simulador de Compatibilidade com Vaga
+// ======================================================
 
 
-// Classe Vaga (POO)
+// ======================================================
+// RF09 – CLASSE VAGA
+// ======================================================
 
 class Vaga {
   constructor(id, empresa, cargo, requisitos, salario, modalidade) {
@@ -16,14 +17,16 @@ class Vaga {
     this.modalidade = modalidade;
   }
 
-  // Método que usa "this" para acessar os dados do próprio objeto
+  // RF11 – Método que usa "this" para acessar os dados do próprio objeto
   exibirResumo() {
     return `${this.cargo} na empresa ${this.empresa} | R$ ${this.salario} | ${this.modalidade}`;
   }
 }
 
 
-// Herança: VagaFrontEnd herda tudo de Vaga e adiciona o nível
+// ======================================================
+// RF10 – HERANÇA: VagaFrontEnd herda tudo de Vaga
+// ======================================================
 
 class VagaFrontEnd extends Vaga {
   constructor(id, empresa, cargo, requisitos, salario, modalidade, nivel) {
@@ -37,6 +40,9 @@ class VagaFrontEnd extends Vaga {
 }
 
 
+// ======================================================
+// RF01 – CANDIDATOS
+// ======================================================
 
 const candidatos = [
   {
@@ -90,7 +96,10 @@ const candidatos = [
   }
 ];
 
-// Relação de Vagas
+
+// ======================================================
+// RF02 – VAGAS (criadas com a classe VagaFrontEnd)
+// ======================================================
 
 const vagas = [
   new VagaFrontEnd(1, "PixelTech",   "Desenvolvedor Front-End Júnior", ["HTML", "CSS", "JavaScript", "Git"],                  2800, "Remoto",     "Júnior"),
@@ -101,16 +110,17 @@ const vagas = [
 ];
 
 
-// Função para normalizar texto, melhorando buscas e comparações.
-// Converte para minúsculas e remove espaços extras.
+// ======================================================
+// FUNÇÕES AUXILIARES
+// ======================================================
 
+// Normaliza texto para comparações mais seguras
 function normalizarTexto(texto) {
   return texto.toLowerCase().trim();
 }
 
 
-// Função para classificar o percentual em Alta, Média ou Baixa compatibilidade
-
+// RF04 – Classifica o percentual em Alta, Média ou Baixa compatibilidade
 function classificarPercentual(percentual) {
   if (percentual >= 80) {
     return "🟢 Alta compatibilidade";
@@ -121,9 +131,59 @@ function classificarPercentual(percentual) {
   }
 }
 
-// Encontra a vaga com maior compatibilidade para um candidato
-// Usa o método de array .reduce()
 
+// RF03 – Calcula compatibilidade entre candidato e vaga
+function calcularCompatibilidade(candidato, vaga) {
+  // RF08 – map: normaliza as habilidades do candidato
+  const habilidadesNorm = candidato.habilidades.map(h => normalizarTexto(h));
+
+  // RF08 – map: normaliza os requisitos da vaga
+  const requisitosNorm = vaga.requisitos.map(r => normalizarTexto(r));
+
+  // RF08 – filter: encontra habilidades que o candidato possui
+  const habilidadesEncontradas = requisitosNorm.filter(req =>
+    habilidadesNorm.includes(req)
+  );
+
+  // RF05 – filter: encontra habilidades que o candidato não possui
+  const habilidadesFaltantes = requisitosNorm.filter(req =>
+    !habilidadesNorm.includes(req)
+  );
+
+  const percentual = requisitosNorm.length > 0
+    ? (habilidadesEncontradas.length / requisitosNorm.length) * 100
+    : 0;
+
+  return { percentual, habilidadesEncontradas, habilidadesFaltantes };
+}
+
+
+// Classifica e ordena todos os candidatos para uma vaga
+function classificarCandidatos(candidatos, vaga) {
+  // RF08 – map: gera o ranking com os dados de compatibilidade
+  const ranking = candidatos.map(candidato => {
+    const compatibilidade = calcularCompatibilidade(candidato, vaga);
+    return {
+      ...candidato,
+      percentual:             compatibilidade.percentual,
+      percentualFormatado:    `${compatibilidade.percentual.toFixed(0)}%`,
+      classificacao:          classificarPercentual(compatibilidade.percentual),
+      habilidadesEncontradas: compatibilidade.habilidadesEncontradas,
+      habilidadesFaltantes:   compatibilidade.habilidadesFaltantes
+    };
+  });
+
+  ranking.sort((a, b) => {
+    if (b.percentual !== a.percentual) return b.percentual - a.percentual;
+    return b.experienciaMeses - a.experienciaMeses;
+  });
+
+  return ranking;
+}
+
+
+// RF06 – Encontra a vaga com maior compatibilidade para um candidato
+// RF08 – reduce: percorre todas as vagas e guarda a de maior percentual
 function encontrarMelhorVaga(candidato, vagas) {
   return vagas.reduce((melhor, vagaAtual) => {
     const compAtual  = calcularCompatibilidade(candidato, vagaAtual);
@@ -132,11 +192,9 @@ function encontrarMelhorVaga(candidato, vagas) {
   });
 }
 
-// Gerar uma recomendação de estudo baseada nas habilidades faltantes
 
+// RF07 – Gera recomendação de estudo baseada nas habilidades faltantes
 function gerarRecomendacao(candidato, vagas) {
-
-  // Coleta todas as habilidades faltantes do candidato em todas as vagas
   const todasFaltantes = [];
 
   for (const vaga of vagas) {
@@ -146,20 +204,16 @@ function gerarRecomendacao(candidato, vagas) {
     }
   }
 
-  // Se não faltar nada, retorna uma mensagem positiva
   if (todasFaltantes.length === 0) {
     return "Parabéns! Você atende todos os requisitos das vagas analisadas. 🎯";
   }
 
-  // Remove habilidades duplicadas usando Set
   const semDuplicatas = [...new Set(todasFaltantes)];
-
   return `Priorize estudar: ${semDuplicatas.join(", ")}.`;
 }
 
-// Callback
-// Utilizando Callback em "finalizarAnalise", em que recebe uma função como parâmetro e a chama no final 
 
+// RF12 – Callback: função que recebe outra função como parâmetro
 function finalizarAnalise(nomeCandidato, callback) {
   console.log("\n✅ Análise finalizada.");
   callback(nomeCandidato);
@@ -169,10 +223,8 @@ function exibirMensagemFinal(nome) {
   console.log(`📌 ${nome} foi o candidato mais compatível. Revise as habilidades faltantes e atualize o plano de estudos!`);
 }
 
-// Closure
-// criarContadorDeAnalises retorna uma função interna que
-// "lembra" o valor de "total" entre as chamadas
 
+// RF13 – Closure: função que lembra o valor de "total" entre as chamadas
 function criarContadorDeAnalises() {
   let total = 0;
   return function () {
@@ -181,14 +233,14 @@ function criarContadorDeAnalises() {
   };
 }
 
-// Cria o contador uma vez — a partir daqui basta chamar contarAnalise()
 const contarAnalise = criarContadorDeAnalises();
 
-//-----------------------------------------------------------------------------------------------------------
 
-// RF14 – Promise
-// Simula um carregamento de vagas como se viessem de um servidor
+// ======================================================
+// RF14 – PROMISE + ASYNC/AWAIT
+// ======================================================
 
+// Simula o carregamento das vagas como se viessem de um servidor
 function buscarVagasSimuladas() {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -197,23 +249,21 @@ function buscarVagasSimuladas() {
   });
 }
 
-
-// RF14 – async/await
-// Espera as vagas carregarem antes de continuar
-
+// Função principal que inicia o sistema
 async function iniciarSistema() {
   console.log("⏳ Carregando vagas...");
   const vagasCarregadas = await buscarVagasSimuladas();
   console.log("✅ Vagas carregadas!\n");
 
   const entrada = prompt("Digite o ID da vaga que deseja pesquisar:");
-  const idVaga = Number(entrada);
+  const idVaga  = Number(entrada);
 
   if (entrada === null || entrada.trim() === "" || isNaN(idVaga)) {
     console.log("❌ ID inválido. Por favor, digite um número.");
     return;
   }
 
+  // RF08 – find: busca a vaga pelo ID
   const vagaEscolhida = vagasCarregadas.find(vaga => vaga.id === idVaga);
 
   if (vagaEscolhida) {
@@ -234,9 +284,9 @@ async function iniciarSistema() {
     console.log("=================================");
 
     const rankingVisual = ranking.map(candidato => ({
-      Nome: candidato.nome,
-      Área: candidato.area,
-      Experiência: `${candidato.experienciaMeses} meses`,
+      Nome:          candidato.nome,
+      Área:          candidato.area,
+      Experiência:   `${candidato.experienciaMeses} meses`,
       Compatibilidade: candidato.percentualFormatado,
       Classificação: candidato.classificacao,
       "Habilidades Compatíveis":
@@ -284,73 +334,6 @@ async function iniciarSistema() {
   }
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------
-
-
-// Função para calcular compatibilidade entre candidato e vaga
-
-function calcularCompatibilidade(candidato, vaga) {
-  // Normaliza as habilidades do candidato
-  const habilidadesNorm = candidato.habilidades.map(h => normalizarTexto(h));
-
-  // Normaliza os requisitos da vaga
-  const requisitosNorm = vaga.requisitos.map(r => normalizarTexto(r));
-
-  // Filtra os requisitos da vaga que o candidato possui
-  const habilidadesEncontradas = requisitosNorm.filter(req =>
-    habilidadesNorm.includes(req)
-  );
-
-  // Verifica os requisitos que faltam para o candidato
-  const habilidadesFaltantes = requisitosNorm.filter(req =>
-    !habilidadesNorm.includes(req)
-  );
-
-  // Calcula o percentual de compatibilidade.
-  // Se existir pelo menos 1 requisito, faz o cálculo da porcentagem.
-  // Caso não exista nenhum requisito, retorna 0 para evitar erro matemático.
-  const percentual = requisitosNorm.length > 0
-    ? (habilidadesEncontradas.length / requisitosNorm.length) * 100
-    : 0;
-
-  return {
-    percentual: percentual,
-    habilidadesEncontradas: habilidadesEncontradas,
-    habilidadesFaltantes: habilidadesFaltantes
-  };
-}
-
-
-// Função para classificar candidatos de acordo com a vaga
-
-function classificarCandidatos(candidatos, vaga) {
-  const ranking = candidatos.map(candidato => {
-    const compatibilidade = calcularCompatibilidade(candidato, vaga);
-
-    return {
-      ...candidato,
-      percentual: compatibilidade.percentual,
-      percentualFormatado: `${compatibilidade.percentual.toFixed(0)}%`,
-      classificacao: classificarPercentual(compatibilidade.percentual),
-      habilidadesEncontradas: compatibilidade.habilidadesEncontradas,
-      habilidadesFaltantes: compatibilidade.habilidadesFaltantes
-    };
-  });
-
-  // Ordena o ranking de candidatos com base no percentual de compatibilidade
-  ranking.sort((a, b) => {
-    // Primeiro ordena pelo percentual (do maior para o menor)
-    if (b.percentual !== a.percentual) {
-      return b.percentual - a.percentual;
-    }
-    // Se empatar, ordena pela experiência
-    return b.experienciaMeses - a.experienciaMeses;
-  });
-
-  return ranking;
-}
 
 // Inicia o sistema
 iniciarSistema();
-
-
