@@ -124,5 +124,6 @@ O projeto foi organizado com um quadro Kanban no **Trello**, com as colunas: Bac
 ## 👨‍💻 Autor
 
 Diego da Costa
+
 Desenvolvido como Mini-Projeto Avaliativo do Módulo 01 — Semana 06  
 Curso de Programação Front-End React — Turma T2
